@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Speed Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 30px;
+            width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        #display-text {
+            font-size: 18px;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            font-size: 16px;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            resize: none;
+            outline: none;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        #result {
+            font-size: 18px;
+            margin-top: 20px;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Typing Speed Test</h1>
+        <div id="display-text">Click "Start Test" to begin!</div>
+        <textarea id="user-input" placeholder="Start typing here..." disabled></textarea>
+        <button id="start-btn">Start Test</button>
+        <!-- <div id="result"></div> -->
+        <div  style="font-size: 18px; color: #007bff; margin-bottom: 10px;" id="result">
+            Time Left: 30s
+        </div>
+    </div>
+
+    <script>
+        const displayText = document.getElementById('display-text');
+        const userInput = document.getElementById('user-input');
+        const startBtn = document.getElementById('start-btn');
+        const result = document.getElementById('result');
+
+        const sampleTexts = [
+            "The quick brown fox jumps over the lazy dog.",
+            "Typing tests are a great way to improve your speed and accuracy.",
+            "Practice makes perfect. Keep typing to get better.",
+            "HTML, CSS, and JavaScript are essential for web development."
+        ];
+
+        let timerInterval; // To store the timer interval
+        const gameDuration = 30; // Set total time for the game (in seconds)
+        function startGame() {
+            // Reset values
+            userInput.value = "";
+            result.textContent = "";
+            userInput.disabled = false;
+            displayText.style.color = "#333"; // Reset text color
+            let timeLeft = gameDuration;
+
+            // Pick a random text and display it
+            selectedText = sampleTexts[Math.floor(Math.random() * sampleTexts.length)];
+            displayText.textContent = selectedText;
+
+            // Focus the input and start timer
+            startTime = new Date();
+            updateTimerDisplay(timeLeft);
+
+            //timer function
+            timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay(timeLeft);
+
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            endGame();
+        }
+    }, 1000);
+
+    // Focus on the input
+    userInput.focus();
+        }
+
+        function endGame() {
+            // Stop timer
+            clearInterval(timerInterval);
+            endTime = new Date();
+            const totalTime = (endTime - startTime) / 1000; // In seconds
+            const typedText = userInput.value.trim();
+
+            // Check accuracy
+            const wordCount = selectedText.split(" ").length;
+            const speed = Math.round((wordCount / totalTime) * 60);
+
+            // Compare the text
+            const accuracy = calculateAccuracy(selectedText, typedText);
+
+            result.textContent = `Speed: ${speed} WPM | Accuracy: ${accuracy}%`;
+            userInput.disabled = true;
+            displayText.style.color = "#d9534f"; // Indicate game over
+        }
+        function updateTimerDisplay(time) {
+          result.textContent = `Time Left: ${time}s`;
+        //   document.getElementById('timer').textContent = `Time Left: ${time}s`;
+        }
+
+        function calculateAccuracy(original, typed) {
+            const originalWords = original.split(" ");
+            const typedWords = typed.split(" ");
+            let correctWords = 0;
+
+            originalWords.forEach((word, index) => {
+                if (word === typedWords[index]) {
+                    correctWords++;
+                }
+            });
+
+            return ((correctWords / originalWords.length) * 100).toFixed(2);
+        }
+
+        // Event Listeners
+        startBtn.addEventListener('click', startGame);
+        userInput.addEventListener('input', () => {
+            if (userInput.value.trim() === selectedText) {
+                endGame();
+            }
+        });
+    </script>
+</body>
+</html>
